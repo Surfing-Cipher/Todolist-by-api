@@ -67,7 +67,7 @@ const fetchTodoFromServer = async() => {
 
 const SendtoServer = async (payload) => {
     try {
-        const res = await fetch('https://dummyjson.com/todos/add', {
+        const res = await fetch('https://jsonplaceholder.typicode.com/posts', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
