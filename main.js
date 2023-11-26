@@ -1,14 +1,13 @@
 async function saveTodo() {
     const ToDolist = document.getElementById('Todolist').value;
     if (ToDolist) {
-        saveUserLocally(ToDolist); // Pass ToDolist to saveUserLocally
-
         const payload = {
             List: ToDolist,
             // add any other data you want
         };
 
         try {
+            console.log(payload)
             await SendtoServer(payload);
             renderTodoList();
         } catch (error) {
@@ -22,40 +21,26 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-function saveUserLocally(ToDolist) {
-    // Get existing todo from local storage or initialize as an empty array
-    const list_todo = JSON.parse(localStorage.getItem('Todo')) || [];
 
-    // Add the new todo to the array
-    list_todo.push(ToDolist);
-    
-    // Save the updated list array back to local storage
-    localStorage.setItem('Todo', JSON.stringify(list_todo));
-}
-
-
-function renderTodoList() {
+function renderTodoList(Todos, payload) {
     const userListElement = document.getElementById('List');
     userListElement.innerHTML = '';
 
-    // Get todo from local storage
-    const Todo = JSON.parse(localStorage.getItem('Todo')) || [];
-
     // Render each todo as a list item
-    Todo.forEach(todo => {
-        const markup = `<li>${todo}</li>`;
+    Todos.forEach(Todos => {
+        const markup = `<li>${Todos.todo}</li>`;
         userListElement.insertAdjacentHTML('beforeend', markup);
     });
 }
 
 const fetchTodoFromServer = async() => {
     try{
-        const res = await fetch('https://dummyjson.com/todos/1');
+        const res = await fetch('https://dummyjson.com/todos');
         const data = await res.json();
-
+        
         if (res.ok) {
             console.log('Data recieved from the server successfully');
-            renderTodoList();
+            renderTodoList(data.todos);
         } else {
             console.error('Failed to recieved data from the server');
         }
@@ -85,6 +70,5 @@ const SendtoServer = async (payload) => {
         console.error('Error data not sent to server', error);
     }
 };
-
 
 
