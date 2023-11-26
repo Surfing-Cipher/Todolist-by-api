@@ -3,13 +3,14 @@ async function saveTodo() {
     if (ToDolist) {
         const payload = {
             List: ToDolist,
+            id: 5,
             // add any other data you want
         };
 
         try {
             console.log(payload)
             await SendtoServer(payload);
-            renderTodoList();
+            renderTodoList(payload);
         } catch (error) {
             console.error('Error while saving todo:', error);
         }
@@ -26,11 +27,13 @@ function renderTodoList(Todos, payload) {
     const userListElement = document.getElementById('List');
     userListElement.innerHTML = '';
 
-    // Render each todo as a list item
+    Todo.push(payload);
+
     Todos.forEach(Todos => {
         const markup = `<li>${Todos.todo}</li>`;
         userListElement.insertAdjacentHTML('beforeend', markup);
     });
+    
 }
 
 const fetchTodoFromServer = async() => {
@@ -60,6 +63,7 @@ const SendtoServer = async (payload) => {
             body: JSON.stringify(payload)
         });
         const data = await res.json();
+
 
         if (res.ok) {
             console.log('Data sent to server successfully');
