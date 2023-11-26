@@ -10,7 +10,7 @@ async function saveTodo() {
         try {
             console.log(payload)
             await SendtoServer(payload);
-            renderTodoList(payload);
+            renderTodoList(Todos, payload);
         } catch (error) {
             console.error('Error while saving todo:', error);
         }
@@ -27,7 +27,7 @@ function renderTodoList(Todos, payload) {
     const userListElement = document.getElementById('List');
     userListElement.innerHTML = '';
 
-    Todo.push(payload);
+    Todos.push(payload);
 
     Todos.forEach(Todos => {
         const markup = `<li>${Todos.todo}</li>`;
@@ -74,5 +74,4 @@ const SendtoServer = async (payload) => {
         console.error('Error data not sent to server', error);
     }
 };
-
 
