@@ -1,16 +1,18 @@
+let Todos = [];
 async function saveTodo() {
     const ToDolist = document.getElementById('Todolist').value;
     if (ToDolist) {
         const payload = {
-            List: ToDolist,
-            id: 5,
+            todo: ToDolist,
             // add any other data you want
         };
 
         try {
             console.log(payload)
             await SendtoServer(payload);
+            fetchTodoFromServer(payload);
             renderTodoList(Todos, payload);
+            
         } catch (error) {
             console.error('Error while saving todo:', error);
         }
@@ -36,14 +38,15 @@ function renderTodoList(Todos, payload) {
     
 }
 
-const fetchTodoFromServer = async() => {
+const fetchTodoFromServer = async(payload) => {
     try{
         const res = await fetch('https://dummyjson.com/todos');
         const data = await res.json();
-        
+        Todos = data.todos;
+        console.log(data)
         if (res.ok) {
             console.log('Data recieved from the server successfully');
-            renderTodoList(data.todos);
+            renderTodoList(Todos, payload);
         } else {
             console.error('Failed to recieved data from the server');
         }
@@ -74,4 +77,3 @@ const SendtoServer = async (payload) => {
         console.error('Error data not sent to server', error);
     }
 };
-
