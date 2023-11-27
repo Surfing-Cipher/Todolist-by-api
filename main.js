@@ -15,17 +15,33 @@ async function saveTodo() {
 
         payload = {
             todo: ToDolist,
-            id: newId,
+            userId: newId,
+            completed: false
         };
 
-        try {
-            console.log(payload);
-            await SendtoServer(payload);
-            await fetchTodoFromServer();
+        try{
+
+        const res = await fetch('https://jsonplaceholder.typicode.com/posts', 
+        {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+
+            let addedTodo = await res.json();
+            Todos.push(addedTodo);
             renderTodoList();
-        } catch (error) {
-            console.error('Error while saving todo:', error);
+
+            document.querySelector("#Todolist").value = "";
+
         }
+        catch(error){
+
+            console.error("Unable to add new todo", error)
+
+        }
+
+        
     }
 }
 
@@ -44,9 +60,6 @@ function renderTodoList() {
         }
     });
 
-    if (payload && !Todos.find(item => item.id === payload.id)) {
-        Todos.push(payload);
-    }
 }
 
 async function fetchTodoFromServer() {
@@ -66,26 +79,7 @@ async function fetchTodoFromServer() {
     }
 }
 
-async function SendtoServer(payload) {
-    try {
-        const res = await fetch('https://jsonplaceholder.typicode.com/posts', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-        const data = await res.json();
 
-        if (res.ok) {
-            console.log('Data sent to the server successfully');
-        } else {
-            console.error('Failed to send data to the server');
-        }
-    } catch (error) {
-        console.error('Error data not sent to the server', error);
-    }
-}
 
 function getHighestIdFromTodos() {
     let highestId = 0;
