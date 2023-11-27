@@ -31,9 +31,12 @@ function renderTodoList(Todos, payload) {
 
     Todos.push(payload);
 
-    Todos.forEach(Todos => {
-        const markup = `<li>${Todos.todo}</li>`;
-        userListElement.insertAdjacentHTML('beforeend', markup);
+        Todos.forEach(todoItem => {
+
+        if (todoItem && todoItem.todo) {
+            const markup = `<li>${todoItem.todo}</li>`;
+            userListElement.insertAdjacentHTML('beforeend', markup);
+        }
     });
     
 }
@@ -42,7 +45,7 @@ const fetchTodoFromServer = async(payload) => {
     try{
         const res = await fetch('https://dummyjson.com/todos');
         const data = await res.json();
-        Todos = data.todos;
+        Todos = data.todos || [];
         console.log(data)
         if (res.ok) {
             console.log('Data recieved from the server successfully');
