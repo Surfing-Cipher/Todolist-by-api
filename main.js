@@ -55,7 +55,7 @@ function renderTodoList() {
 
     Todos.forEach(todoItem => {
         if (todoItem && todoItem.todo) {
-            const markup = `<li>${todoItem.todo}</li>`;
+            const markup = `<li id="${todoItem.id}">${todoItem.todo}</li>`;
             userListElement.insertAdjacentHTML('beforeend', markup);
         }
     });
@@ -92,3 +92,33 @@ function getHighestIdFromTodos() {
 
     return highestId;
 }
+
+
+var ListContainer = document.getElementById('List');
+
+
+ListContainer.addEventListener('click', (e) => {
+
+    e.preventDefault();
+
+    let targedId = e.target.getAttribute("id");
+
+    fetch('https://dummyjson.com/todos/'+targedId, {
+        method: 'DELETE',
+    })
+    .then(res => res.json())
+    .then(function() {
+
+        var todoIndex = Todos.findIndex(item => item.id == targedId);
+        Todos.splice(todoIndex, 1);
+        renderTodoList();
+
+       }
+
+    );
+
+    
+
+});
+
+
