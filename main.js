@@ -1,65 +1,72 @@
 let Todos = [];
+let payload = null;
+
 async function saveTodo() {
     const ToDolist = document.getElementById('Todolist').value;
     if (ToDolist) {
-        const payload = {
+        const highestId = getHighestIdFromTodos();
+        const newId = highestId + 1;
+
+        const existingItem = Todos.find(item => item && item.id === newId);
+        if (existingItem) {
+            console.error('Item with the same id already exists.');
+            return;
+        }
+
+        payload = {
             todo: ToDolist,
-            // add any other data you want
+            id: newId,
         };
 
         try {
-            console.log(payload)
+            console.log(payload);
             await SendtoServer(payload);
-            fetchTodoFromServer(payload);
-            renderTodoList(Todos, payload);
-            
+            await fetchTodoFromServer();
+            renderTodoList();
         } catch (error) {
             console.error('Error while saving todo:', error);
         }
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     fetchTodoFromServer();
 });
 
-
-
-function renderTodoList(Todos, payload) {
+function renderTodoList() {
     const userListElement = document.getElementById('List');
     userListElement.innerHTML = '';
 
-    Todos.push(payload);
-
-        Todos.forEach(todoItem => {
-
+    Todos.forEach(todoItem => {
         if (todoItem && todoItem.todo) {
             const markup = `<li>${todoItem.todo}</li>`;
             userListElement.insertAdjacentHTML('beforeend', markup);
         }
     });
-    
+
+    if (payload && !Todos.find(item => item.id === payload.id)) {
+        Todos.push(payload);
+    }
 }
 
-const fetchTodoFromServer = async(payload) => {
-    try{
+async function fetchTodoFromServer() {
+    try {
         const res = await fetch('https://dummyjson.com/todos');
         const data = await res.json();
         Todos = data.todos || [];
-        console.log(data)
+        console.log(data);
         if (res.ok) {
-            console.log('Data recieved from the server successfully');
-            renderTodoList(Todos, payload);
+            console.log('Data received from the server successfully');
+            renderTodoList();
         } else {
-            console.error('Failed to recieved data from the server');
+            console.error('Failed to receive data from the server');
         }
     } catch (error) {
         console.error('Error data arrived from the server', error);
     }
 }
 
-
-const SendtoServer = async (payload) => {
+async function SendtoServer(payload) {
     try {
         const res = await fetch('https://jsonplaceholder.typicode.com/posts', {
             method: 'POST',
@@ -70,13 +77,24 @@ const SendtoServer = async (payload) => {
         });
         const data = await res.json();
 
-
         if (res.ok) {
-            console.log('Data sent to server successfully');
+            console.log('Data sent to the server successfully');
         } else {
-            console.error('Failed to send data to server');
+            console.error('Failed to send data to the server');
         }
     } catch (error) {
-        console.error('Error data not sent to server', error);
+        console.error('Error data not sent to the server', error);
     }
-};
+}
+
+function getHighestIdFromTodos() {
+    let highestId = 0;
+
+    for (const todoItem of Todos) {
+        if (todoItem && todoItem.id > highestId) {
+            highestId = todoItem.id;
+        }
+    }
+
+    return highestId;
+}
